@@ -28,5 +28,4 @@ def handle_disconnect():
     print("Client disconnected")
 
 if __name__ == '__main__':
-    print("[!] Fernet Key:", fernet_key.decode())
     socketio.run(app, host='0.0.0.0', port=5000)
