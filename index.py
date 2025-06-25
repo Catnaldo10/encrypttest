@@ -7,6 +7,10 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 clients = []
 
+@app.route('/', methods=['GET'])
+def gg():
+    return "Server encrypt is online"
+
 
 @app.route('/send', methods=['POST'])
 def send_message():
