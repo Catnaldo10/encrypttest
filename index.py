@@ -1,31 +1,36 @@
 from flask import Flask, request, jsonify
-from flask_socketio import SocketIO, emit
+from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, cors_allowed_origins="*")
+app.config['JSON_SORT_KEYS'] = False
 
-clients = []
+# Danh sách tin nhắn lưu trong RAM
+messages = []
 
 @app.route('/', methods=['GET'])
-def gg():
-    return "Server encrypt is online"
-
+def home():
+    return 'REST API chat server is running.'
 
 @app.route('/send', methods=['POST'])
 def send_message():
     data = request.json
-    encrypted_msg = data.get('msg')
-    emit('message', encrypted_msg, broadcast=True, namespace='/')
-    return jsonify({'status': 'sent'})
+    ip = data.get('ip')
+    content = data.get('content')
 
-@socketio.on('connect')
-def handle_connect():
-    print("Client connected")
+    if not ip or not content:
+        return jsonify({'error': 'Missing ip or content'}), 400
 
-@socketio.on('disconnect')
-def handle_disconnect():
-    print("Client disconnected")
+    msg = {
+        'ip': ip,
+        'content': content,
+        'timestamp': datetime.utcnow().isoformat() + 'Z'
+    }
+    messages.append(msg)
+    return jsonify({'status': 'sent', 'message': msg}), 200
+
+@app.route('/messages', methods=['GET'])
+def get_messages():
+    return jsonify(messages)
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
