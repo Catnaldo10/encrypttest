@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
-from cryptography.fernet import Fernet
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
